@@ -57,4 +57,4 @@ $dictionary['Enhanced_WebLogicHooksMetadataFields'] = [
 
 if (!class_exists('VardefManager')){
 }
-VardefManager::createVardef('Enhanced_WebLogicHooksDelivery', 'Enhanced_WebLogicHooksDelivery', array('basic'));
+VardefManager::createVardef('Enhanced_WebLogicHooksMetadataFields', 'Enhanced_WebLogicHooksMetadataFields', array('basic'));

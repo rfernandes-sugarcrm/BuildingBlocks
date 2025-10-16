@@ -68,8 +68,8 @@ $installdefs = array(
             'tab' => true,
         ),
         array (
-                'module' => 'Enhanced_WebLogicHooksDelivery',
-                'class' => 'Enhanced_WebLogicHooksDelivery',
+                'module' => 'Enhanced_WebLogicHooksMetadataFields',
+                'class' => 'Enhanced_WebLogicHooksMetadataFields',
                 'path' => 'modules/Enhanced_WebLogicHooksMetadataFields/Enhanced_WebLogicHooksMetadataFields.php',
                 'tab' => true,
         ),
