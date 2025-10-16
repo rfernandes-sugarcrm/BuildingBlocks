@@ -10,7 +10,7 @@
  * Copyright (C) SugarCRM Inc. All rights reserved.
  */
 
-$viewdefs['Enhanced_WebLogicHooksDelivery']['base']['layout']['selection-list'] = [
+$viewdefs['Enhanced_WebLogicHooksMetadataFields']['base']['layout']['selection-list'] = [
     'css_class' => 'flex-list-layout flex flex-col group/records h-full overflow-hidden',
     'components' => [
         [

@@ -18,7 +18,7 @@ class Enhanced_WebLogicHooksMetadataFieldsApi extends SugarApi
         return [
             'opportunity_stats' => [
                 'reqType' => 'GET',
-                'path' => ['Enhanced_WebLogicHooksDelivery', '<module>'],
+                'path' => ['Enhanced_WebLogicHooksMetadataFields', '<module>'],
                 'pathVars' => ['me', 'module'],
                 'method' => 'getModuleMetadataFields',
                 'shortHelp' => 'Get metadata fields for a given module',

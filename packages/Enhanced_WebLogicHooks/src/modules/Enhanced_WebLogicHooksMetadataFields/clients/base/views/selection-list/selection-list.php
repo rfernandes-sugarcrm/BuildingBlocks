@@ -11,7 +11,7 @@
  * Copyright (C) SugarCRM Inc. All rights reserved.
  */
 
-$viewdefs['Enhanced_WebLogicHooksDelivery']['base']['view']['selection-list'] = [
+$viewdefs['Enhanced_WebLogicHooksMetadataFields']['base']['view']['selection-list'] = [
     'panels' => [
         [
             'name' => 'panel_header',
