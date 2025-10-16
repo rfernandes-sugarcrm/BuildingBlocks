@@ -3,11 +3,11 @@
 // Copyright 2016 SugarCRM Inc.  Licensed by SugarCRM under the Apache 2.0 license.
 
 
-$packageID = "BuildingBlocks_IFrameDrawerAction";
-$packageLabel = "BuildingBlocks: IFrame Drawer Action";
-$supportedVersionRegex = '(25|9|8|7)\\..*$';
-$acceptableSugarFlavors = array('PRO','ENT','ULT');
-$description = 'Opens a drawer that displays a custom IFrame';
+$packageID = "BuildingBlock_EnhancedWebLogicHooks";
+$packageLabel = "BuildingBlocks: Enhanced Web Logic Hooks";
+$supportedVersionRegex = '(26|25|14)\\..*$';
+$acceptableSugarFlavors = array('ENT');
+$description = 'Enhanced Web Logic Hooks.';
 /******************************/
 
 if (empty($argv[1])) {
@@ -47,6 +47,7 @@ $manifest = array(
     'is_uninstallable' => 'true',
     'published_date' => date("Y-m-d H:i:s"),
     'type' => 'module',
+    'remove_tables' => 'prompt',
     'acceptable_sugar_versions' => array(
         'exact_matches' => array(
         ),
@@ -58,10 +59,43 @@ $manifest = array(
 );
 
 $installdefs = array(
-    'beans' => array (),
     'id' => $packageID,
-    'post_execute' => array(
-        'scripts/cleanup.php',
+    'beans' => array (
+        array (
+            'module' => 'Enhanced_WebLogicHooks',
+            'class' => 'Enhanced_WebLogicHooks',
+            'path' => 'modules/Enhanced_WebLogicHooks/Enhanced_WebLogicHooks.php',
+            'tab' => true,
+        ),
+        array (
+                'module' => 'Enhanced_WebLogicHooksDelivery',
+                'class' => 'Enhanced_WebLogicHooksDelivery',
+                'path' => 'modules/Enhanced_WebLogicHooksMetadataFields/Enhanced_WebLogicHooksMetadataFields.php',
+                'tab' => true,
+        ),
+        array (
+                'module' => 'Enhanced_WebLogicHooksDelivery',
+                'class' => 'Enhanced_WebLogicHooksDelivery',
+                'path' => 'modules/Enhanced_WebLogicHooksDelivery/Enhanced_WebLogicHooksDelivery.php',
+                'tab' => true,
+        ),
+    ),
+    'language' => array (
+        array (
+            'from' => '<basepath>/src/modules/Enhanced_WebLogicHooks/language/en_us.lang.php',
+            'to_module' => 'application',
+            'language' => 'en_us',
+        ),
+        array (
+                'from' => '<basepath>/src/modules/Enhanced_WebLogicHooksMetadataFields/language/en_us.lang.php',
+                'to_module' => 'application',
+                'language' => 'en_us',
+        ),
+        array (
+                'from' => '<basepath>/src/modules/Enhanced_WebLogicHooksDelivery/language/en_us.lang.php',
+                'to_module' => 'application',
+                'language' => 'en_us',
+        ),
     ),
 );
 

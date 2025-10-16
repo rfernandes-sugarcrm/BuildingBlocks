@@ -1,0 +1,58 @@
+{{!--
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/Resources/Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
+--}}
+{{#if isTextArea}}
+    <button name="toggleEditor" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_TOGGLE_EDITOR" module}}" data-original-title="{{str 'LBL_EWLH_TOGGLE_EDITOR' module}}">
+        <i class="sicon sicon-varchar"></i>
+    </button>
+    <button name="addAllFields" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_ADD_ALL_FIELDS" module}}" data-original-title="{{str 'LBL_EWLH_ADD_ALL_FIELDS' module}}">
+        <i class="sicon sicon-all-fields-xxl"></i>
+    </button>
+    <div id="kv-textarea" class="flex gap-2">
+        <div id="kv-selector-group" class="flex gap-2">
+            <textarea rows="10" cols="120" name="{{name}}"
+                      {{#if def.placeholder}} placeholder="{{str def.placeholder module}}"{{/if}}
+                      {{#if def.tabindex}} tabindex="{{def.tabindex}}"{{/if}}>{{jsonStr}}</textarea>
+            {{#unless hideHelp}}{{#if def.help}}<p class="help-block">{{str def.help module}}</p>{{/if}}{{/unless}}
+            <button name="openSelector"  class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_SELECT_FIELD" module}}" data-original-title="{{str 'LBL_EWLH_SELECT_FIELD' module}}">
+                <i class="sicon sicon-add-existing"></i>
+            </button>
+        </div>
+    </div>
+{{else}}
+    <button name="toggleEditor" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_TOGGLE_EDITOR" module}}" data-original-title="{{str 'LBL_EWLH_TOGGLE_EDITOR' module}}">
+        { }
+    </button>
+    <button name="addKVInputs" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_ADD_FIELD" module}}" data-original-title="{{str 'LBL_EWLH_ADD_FIELD' module}}">
+        <i class="sicon sicon-add-circle-lg"></i>
+    </button>
+    <button name="addAllFields" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_ADD_ALL_FIELDS" module}}" data-original-title="{{str 'LBL_EWLH_ADD_ALL_FIELDS' module}}">
+        <i class="sicon sicon-all-fields-xxl"></i>
+    </button>
+    <button name="removeAllFields" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_REMOVE_ALL_FIELDS" module}}" data-original-title="{{str 'LBL_EWLH_REMOVE_ALL_FIELDS' module}}">
+        <i class="sicon sicon-remove"></i>
+    </button>
+    <div id="kv-editor" class="gap-2 max-h-[18.75rem] overflow-auto">
+       {{#each kvData}}
+           <div class="flex gap-2 kv-input">
+               <input type="text" class="input key" value="{{@key}}"/>
+               <input type="text" class="input value" value="{{this}}"/>
+               <button name="openSelector" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_SELECT_FIELD" ../module}}" data-original-title="{{str 'LBL_EWLH_SELECT_FIELD' ../module}}">
+                   <i class="sicon sicon-add-existing"></i>
+               </button>
+               <button name="removeKVRow" class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_REMOVE_FIELD" ../module}}" data-original-title="{{str 'LBL_EWLH_REMOVE_FIELD' ../module}}">
+                   <i class="sicon sicon-remove"></i>
+               </button>
+           </div>
+       {{/each}}
+    </div>
+{{/if}}
