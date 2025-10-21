@@ -15,7 +15,6 @@ class Enhanced_WebLogicHooksDelivery extends SugarBean {
     public $object_name = 'Enhanced_WebLogicHooksDelivery';
     public $table_name = 'enhanced_web_logic_hooks_delivery';
 
-    public $ewlh_id;
     public $request_data;
     public $response_data;
     public $status;

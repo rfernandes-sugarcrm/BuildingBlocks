@@ -29,4 +29,6 @@ $mod_strings = array(
     'LBL_EWLH_REMOVE_ALL_FIELDS' => 'Remove all key/value fields',
     'LBL_EWLH_RETRY' => 'Retries on failure',
     'LBL_EWLH_RETRY_STRATEGY' => 'Retry Strategy',
+    'LBL_ENHANCED_WLHS_TO_DELIVERYDELIVERY_TITLE' => 'Delivery',
+    'LBL_ENHANCED_WLHS_TO_DELIVERY_TITLE' => 'Delivery',
 );
