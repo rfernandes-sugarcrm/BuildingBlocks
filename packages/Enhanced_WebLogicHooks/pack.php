@@ -80,6 +80,11 @@ $installdefs = array(
                 'tab' => true,
         ),
     ),
+    'relationships' => array (
+        array (
+                'meta_data' => '<basepath>/src/modules/relationships/relationships/enhanced_wlhs_to_deliveryMetaData.php',
+        ),
+    ),
     'language' => array (
         array (
             'from' => '<basepath>/src/modules/Enhanced_WebLogicHooks/language/en_us.lang.php',

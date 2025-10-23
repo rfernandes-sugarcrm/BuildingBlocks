@@ -41,7 +41,8 @@ $viewdefs['Enhanced_WebLogicHooksDelivery']['base']['view']['record'] = [
                 'date_entered',
                 'date_modified',
                 'request_data',
-                'response_data'
+                'response_data',
+                'logs'
             ],
         ],
         [

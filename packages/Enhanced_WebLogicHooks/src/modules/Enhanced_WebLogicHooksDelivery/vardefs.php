@@ -52,6 +52,13 @@ $dictionary['Enhanced_WebLogicHooksDelivery'] = [
             'type' => 'varchar',
             'required' => true,
         ],
+        'logs' => [
+            'name' => 'logs',
+            'vname' => 'LBL_EWLH_LOGS',
+            'type' => 'varchar',
+            'dbType' => 'text',
+            'required' => true,
+        ],
         'enhanced_wlhs_to_delivery' => [
             'name' => 'enhanced_wlhs_to_delivery',
             'type' => 'link',

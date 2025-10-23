@@ -38,6 +38,11 @@ $viewdefs['Enhanced_WebLogicHooksDelivery']['base']['view']['list'] = [
                     'enabled' => true,
                     'sortable' => true,
                 ],
+                [
+                    'name' => 'logs',
+                    'enabled' => true,
+                    'sortable' => true,
+                ],
             ],
         ],
     ],
