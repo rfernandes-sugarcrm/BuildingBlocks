@@ -73,7 +73,7 @@
     format:function(value){
         if (value) {
             if (!value.match(/^([a-zA-Z]+):/)) {
-                value = 'http://' + value;
+                value = 'https://' + value;
             }
             let whiteList = app.config.allowedLinkSchemes;
             this.def.isClickable = true;
@@ -86,7 +86,7 @@
         return value;
     },
     unformat:function(value){
-        value = (value!='' && value!='http://') ? value.trim() : "";
+        value = (value!='' && value!='https://') ? value.trim() : "";
         return value;
     },
     _render: function() {

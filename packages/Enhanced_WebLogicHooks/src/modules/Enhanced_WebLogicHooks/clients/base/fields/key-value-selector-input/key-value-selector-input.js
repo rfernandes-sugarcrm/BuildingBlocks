@@ -14,18 +14,77 @@
  * @extends View.Fields.Base.BaseField
  */
 ({
+
+    /**
+     * Default settings used when none are supplied through metadata.
+     *
+     * Supported settings:
+     * - {Number} max_display_chars The maximum number of characters to be
+     *   displayed before truncating the field.
+     * - {Boolean} collapsed Defines whether or not the textarea detail view
+     *   should be collapsed on initial render.
+     *
+     *     // ...
+     *     'settings' => array(
+     *         'max_display_chars' => 50,
+     *         'collapsed' => false
+     *         //...
+     *     ),
+     *     //...
+     *
+     * @protected
+     * @type {Object}
+     */
+    _defaultSettings: {
+        max_display_chars: 450,
+        collapsed: true
+    },
+
     initialize: function(options) {
         this._super('initialize', [options]);
         this.plugins = _.union(this.plugins, 'Tooltip');
-        this.kvData = {};
+        this._initSettings();
+
+        this.listenTo(this.model, 'before:save', this.setPayloadBeforeSave, this);
+        this.listenTo(this.model, 'data:sync:complete', this._dataLoaded, this);
+        // this.collection.on('data:sync:complete', this.loaded, this);
         this.events = {
             'click [name=toggleEditor]': this.toggleEditor,
             'click [name=addKVInputs]': this.addKVInputs,
             'click [name=removeKVRow]': this.removeKVRow,
             'click [name=openSelector]': this.openSelector,
             'click [name=addAllFields]': this.addAllFields,
-            'click [name=removeAllFields]': this.removeAllFields
+            'click [name=removeAllFields]': this.removeAllFields,
+            'click [data-action=toggle]': this.toggleCollapsed,
         };
+    },
+
+    /**
+     * Initialize settings, default settings are used when none are supplied
+     * through metadata.
+     *
+     * @return Instance of this field.
+     * @protected
+     */
+    _initSettings: function() {
+        this._settings = _.extend({},
+            this._defaultSettings,
+            this.def && this.def.settings || {}
+        );
+        this.collapsed = this._settings.collapsed;
+        this.isTextArea = true;
+
+        return this;
+    },
+
+    _dataLoaded: function() {
+        if(this.model.get(this.name)) {
+            this.kvData = JSON.parse(this.model.get(this.name));
+            this.value = JSON.stringify(this.kvData, null, 2);
+            this.render();
+        }
+
+        return this;
     },
 
     toggleEditor: function(e) {
@@ -33,32 +92,9 @@
         e.stopPropagation();
 
         if (this.isTextArea) {
-            // Parse textarea value as JSON and create kv-inputs
-            let jsonStr = this.$('textarea').val();
-            let kvData = {};
-            try {
-                kvData = JSON.parse(jsonStr);
-            } catch (err) {
-                app.alert.show('invalid_json', {
-                    level: 'error',
-                    messages: 'Invalid JSON format.',
-                    autoClose: true
-                });
-                return;
-            }
-            this.kvData = kvData;
+            this.rebuildFromTextArea();
         } else {
-            // Collect kv-inputs and generate JSON
-            let kvObj = {};
-            this.$('.kv-input').each(function() {
-                let key = $(this).find('.key').val();
-                let value = $(this).find('.value').val();
-                if (key) {
-                    kvObj[key] = value;
-                }
-            });
-            let jsonStr = JSON.stringify(kvObj, null, 2);
-            this.jsonStr = jsonStr;
+            this.rebuildFromKVInputs();
         }
         this.isTextArea = !this.isTextArea;
         this.render();
@@ -87,6 +123,37 @@
         e.stopPropagation();
 
         e.currentTarget.parentElement.remove();
+        this.rebuildFromKVInputs();
+    },
+
+    rebuildFromKVInputs() {
+        let kvObj = {};
+        this.$('.kv-input').each(function() {
+            let key = $(this).find('.key').val();
+            let value = $(this).find('.value').val();
+            if (key) {
+                kvObj[key] = value;
+            }
+        });
+        this.value = JSON.stringify(kvObj, null, 2);
+    },
+
+    rebuildFromTextArea() {
+        // Parse textarea value as JSON and create kv-inputs
+        let text = this.$('textarea').val() || '{}';
+        let kvData = {};
+        try {
+            kvData = JSON.parse(text);
+        } catch (err) {
+            app.alert.show('invalid_json', {
+                level: 'error',
+                messages: 'Invalid JSON format.',
+                autoClose: true
+            });
+            return;
+        }
+        this.kvData = kvData;
+        this.value = text;
     },
 
     addAllFields: async function(e) {
@@ -106,7 +173,7 @@
             });
         }
         this.kvData = kvObj;
-        this.jsonStr = JSON.stringify(kvObj, null, 2);
+        this.value = JSON.stringify(kvObj, null, 2);
         this.render();
     },
 
@@ -115,7 +182,7 @@
         e.stopPropagation();
 
         this.kvData = {};
-        this.jsonStr = '{}';
+        this.value = '{}';
         this.render();
     },
 
@@ -170,5 +237,120 @@
     setValue(selection) {
         const variable = `{::${this.model.get('webhook_target_module')}::${selection.value}::}`;
         $(this.currentTarget.parentElement).find('.value').val(variable);
+    },
+
+    setPayloadBeforeSave: function() {
+        if (this.isTextArea) {
+            this.rebuildFromTextArea();
+        } else {
+            this.rebuildFromKVInputs();
+        }
+        this.model.set(this.name, this.value);
+    },
+
+    /**
+     * @inheritdoc
+     *
+     * Formatter that always returns the value set on the textarea field. Sets
+     * a `short` value for a truncated representation, if the lenght of the
+     * value on the field exceeds that of `max_display_chars`. The return value
+     * can either be a string, or an object such as {long: 'abc'} or
+     * {long: 'abc', short: 'ab'}, for example.
+     * @param {String} value The value set on the textarea field.
+     * @return {String|Object} The value set on the textarea field.
+     */
+    getFormattedValue: function() {
+        if(!this.value) {
+            return '';
+        }
+        const value = this.value.defaultValue || this.value;
+
+        // no need to process further for edit template
+        if (this.tplName === 'edit') {
+            return value;
+        }
+
+        // If the tplName is 'edit' then value needs to be a string. Otherwise
+        var max = this._settings.max_display_chars;
+
+        var valueObj = {
+            long: this.getDescription(value, false),
+            defaultValue: value,
+            short: '',
+        };
+
+        var longValueOverMaxChars = valueObj.long.string.length > max;
+
+        if (valueObj.long && longValueOverMaxChars) {
+            valueObj.short = this.getDescription(value, true);
+        }
+
+        return valueObj;
+    },
+
+    format: function(value) {
+        // If the tplName is 'edit' then value needs to be a string. Otherwise
+        // send back the object containing `value.long` and, if necessary,
+        // `value.short`.
+        var shortComment = value;
+        var max = this._settings.max_display_chars;
+
+        var valueObj = {
+            long: this.getDescription(value, false),
+            defaultValue: value,
+            short: '',
+        };
+
+        var longValueOverMaxChars = valueObj.long.string.length > max;
+
+        if (valueObj.long && longValueOverMaxChars) {
+            valueObj.short = this.getDescription(shortComment, true);
+        }
+
+        return valueObj;
+    },
+
+    /**
+     * Displaying full or short descriptions.
+     *
+     * @param {string} description The value set on the textarea field.
+     * @param {boolean} short Need a short value of the comment.
+     * @return {string} The entry with html for any links.
+     */
+    getDescription: function(description, short) {
+        short = !!short;
+        description = Handlebars.Utils.escapeExpression(description);
+        description = short ? this.getShortComment(description) : description;
+
+        return new Handlebars.SafeString(description);
+    },
+
+    /**
+     * Truncate the text area entry so it is shorter than the max_display_chars
+     * Only truncate on full words to prevent ellipsis in the middle of words
+     *
+     * @param {string} description The comment log entry to truncate
+     * @return {string} the shortened version of an entry if it was originally longer than max_display_chars
+     */
+    getShortComment: function(description) {
+        if (!description.length > this._settings.max_display_chars) {
+            return description;
+        }
+        let shortDescription = description.substring(0, this._settings.max_display_chars);
+        // let's cut at a full word by checking we are at a whitespace char
+        while (!(/\s/.test(shortDescription[shortDescription.length - 1])) && shortDescription.length > 0) {
+            shortDescription = shortDescription.substring(0, shortDescription.length - 1);
+        }
+
+        return shortDescription;
+    },
+
+    /**
+     * Toggles the field between displaying the truncated `short` or `long`
+     * value for the field, and toggles the label for the 'more/less' link.
+     */
+    toggleCollapsed: function() {
+        this.collapsed = !this.collapsed;
+        this.render();
     },
 })

@@ -102,15 +102,15 @@ $dictionary['Enhanced_WebLogicHooks'] = [
             'name' => 'payload',
             'vname' => 'LBL_EWLH_PAYLOAD',
             'type' => 'key-value-selector-input',
-            'dbType' => 'varchar',
+            'dbType' => 'text',
             'comment' => 'Payload to send in the webhook with variables',
             'required' => false,
         ],
         'headers' => [
             'name' => 'headers',
             'vname' => 'LBL_EWLH_HEADERS',
-            'type' => 'varchar',
-            'comment' => 'Payload to send in the webhook with variables',
+            'type' => 'text',
+            'comment' => 'Headers to send in the webhook with variables',
         ],
         'timeout' => [
             'name' => 'timeout',

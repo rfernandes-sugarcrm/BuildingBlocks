@@ -21,7 +21,7 @@
         <div id="kv-selector-group" class="flex gap-2">
             <textarea rows="10" cols="120" name="{{name}}"
                       {{#if def.placeholder}} placeholder="{{str def.placeholder module}}"{{/if}}
-                      {{#if def.tabindex}} tabindex="{{def.tabindex}}"{{/if}}>{{jsonStr}}</textarea>
+                      {{#if def.tabindex}} tabindex="{{def.tabindex}}"{{/if}}>{{value}}</textarea>
             {{#unless hideHelp}}{{#if def.help}}<p class="help-block">{{str def.help module}}</p>{{/if}}{{/unless}}
             <button name="openSelector"  class="btn h-8" rel="tooltip" data-bs-placement="left" aria-label="{{str "LBL_EWLH_SELECT_FIELD" module}}" data-original-title="{{str 'LBL_EWLH_SELECT_FIELD' module}}">
                 <i class="sicon sicon-add-existing"></i>
