@@ -15,7 +15,8 @@ use Psr\Log\LoggerInterface;
 use SugarBean;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
 use Sugarcrm\Sugarcrm\ProcessManager;
-use TimeDate;
+use Sugarcrm\Sugarcrm\modules\Enhanced_WebLogicHooks\Event\Dispatcher\DispatcherFactory;
+use Sugarcrm\Sugarcrm\Security\HttpClient\ExternalResourceClient;
 
 final class Handler
 {
@@ -95,11 +96,54 @@ final class Handler
             }
             $this->applyAuthHeaders($recordIdentifier, $ewlb, $payload);
 
-            $this->addWLLog($recordIdentifier,"EWBH: request_method ({$ewlb->request_method}) url {$ewlb->url}: payload [{$payload}]");
+            $this->addWLLog($recordIdentifier,"RequestMethod ({$ewlb->request_method}) URL {$ewlb->url}");
+            $this->addWLLog($recordIdentifier,"Payload [{$payload}]");
 
-            // TODO: Process webhook request here
-            // $this->processWebhook($ewlb->request_method, $ewlb->url, $ewlb->headers, $payload);
+            $dispatcher = DispatcherFactory::create($ewlb);
+            try {
+                $client = new ExternalResourceClient($ewlb->timeout);
+                $headers = array_merge(['Content-type' => 'application/x-www-form-urlencoded'], $ewlb->headers);
+                $this->addWLLog($recordIdentifier, "Headers: " . json_encode($headers, JSON_PRETTY_PRINT));
+                if ($payload) {
+                    $this->addWLLog($recordIdentifier, "Payload RAW: " . json_encode($payload, JSON_PRETTY_PRINT));
+                    $payload = is_string($payload) ? $payload : http_build_query($payload);
+                    $this->addWLLog($recordIdentifier, "Payload: " . json_encode($payload, JSON_PRETTY_PRINT));
+                }
+                $dispatchResult = $dispatcher->dispatch($client, $ewlb, $payload, $headers);
+//                $this->addWLLog($recordIdentifier, "Dispatch attempts: " . $dispatchResult['attempts']);
+                foreach ($dispatchResult['logs'] as $i => $log) {
+                    $msg = "Attempt " . ($i+1) . ": ";
+                    if ($log['statusCode'] !== null) {
+                        $msg .= "StatusCode: " . $log['statusCode'] . ". ";
+                    }
+                    if ($log['exception'] !== null) {
+                        $msg .= "Exception: " . $log['exception'] . ". ";
+                    }
+//                    $this->addWLLog($recordIdentifier, $msg);
 
+                    // Create and link Enhanced_WebLogicHooksDelivery record for this attempt
+                    $delivery = BeanFactory::newBean('Enhanced_WebLogicHooksDelivery');
+//                    $delivery->parent_id = $bean->id;
+//                    $delivery->response_data = $bean->getModuleName();
+                    $delivery->request_data = $payload;
+                    $delivery->attempt_number = $i + 1;
+                    $delivery->status = $log['statusCode'];
+                    $delivery->failure = $log['exception'];
+                    $delivery->payload = $payload;
+                    $delivery->headers = json_encode($headers);
+                    $delivery->logs = $this->getExecLogs(true);
+                    if ($dispatchResult['response'] && method_exists($dispatchResult['response'], 'getBody')) {
+                        $delivery->response_data = $dispatchResult['response']->getBody()->getContents();
+                    }
+                    $delivery->save();
+                    // Optionally relate via a link field if available:
+                    if ($ewlb->load_relationship('enhanced_wlhs_to_delivery')) {
+                        $ewlb->enhanced_wlhs_to_delivery->add($delivery->id);
+                    }
+                }
+            } catch (Exception $e) {
+                $this->addWLLog($recordIdentifier, "[ERROR] Request failed: " . $e->getMessage());
+            }
         } catch (Exception $e) {
             $this->addWLLog($recordIdentifier,"Error handling event ({$event}) for {$recordIdentifier}: {$e->getMessage()}: {$e->getTraceAsString()}");
         }
@@ -163,6 +207,11 @@ final class Handler
 
     private function preparePayload(string $recordIdentifier, SugarBean $ewlb, string $event): ?string
     {
+        if (is_array($ewlb->payload)) {
+            $payload = json_encode($ewlb->payload);
+            $this->addWLLog($recordIdentifier, "Final payload (array converted to JSON): {$payload}");
+            return $payload;
+        }
         if ($this->isJsonString($ewlb->payload)) {
             $payload = json_encode($ewlb->payload);
             $this->addWLLog($recordIdentifier, "Final payload: {$payload}");
@@ -192,5 +241,14 @@ final class Handler
     {
         $this->logger->info("{$recordIdentifier} -> {$msg}");
         $this->execLogs[] = $msg;
+    }
+
+    private function getExecLogs(bool $asString = false): array|string
+    {
+        $execLogs = $this->execLogs;
+        if ($asString) {
+            $execLogs = implode("<br>● ", $execLogs);
+        }
+        return $execLogs;
     }
 }

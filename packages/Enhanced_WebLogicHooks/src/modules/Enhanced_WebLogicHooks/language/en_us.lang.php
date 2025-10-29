@@ -4,7 +4,8 @@ $mod_strings = array(
     'LBL_MODULE_NAME_SINGULAR' => 'Enhanced Web Logic Hook',
     'LBL_MODULE_TITLE' => 'Enhanced We bLogic Hooks',
     'LBL_RECORD_DETAILS' => 'Details',
-    'LBL_RECORD_SECURITY' => 'Advanced Security',
+    'LBL_RECORD_ADVANCED' => 'Advanced Settings',
+    'LBL_RECORD_SECURITY' => 'Security Settings',
     'LNK_NEW_LOGIC_HOOK' => 'Create Web Logic Hook',
     'LNK_LOGIC_HOOK_LIST' => 'View Web Logic Hooks',
 

@@ -175,6 +175,9 @@
         this.kvData = kvObj;
         this.value = JSON.stringify(kvObj, null, 2);
         this.render();
+        this.hasChanged = () => {
+            return true
+        };
     },
 
     removeAllFields: function(e) {
@@ -184,6 +187,9 @@
         this.kvData = {};
         this.value = '{}';
         this.render();
+        this.hasChanged = () => {
+            return true
+        };
     },
 
     getFilterCollection: function() {
@@ -292,6 +298,9 @@
         // If the tplName is 'edit' then value needs to be a string. Otherwise
         // send back the object containing `value.long` and, if necessary,
         // `value.short`.
+        if (this.tplName === 'edit' && !value) {
+            return this.value;
+        }
         var shortComment = value;
         var max = this._settings.max_display_chars;
 

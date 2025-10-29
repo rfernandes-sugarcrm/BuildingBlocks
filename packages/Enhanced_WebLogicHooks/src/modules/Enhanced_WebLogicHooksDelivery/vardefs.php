@@ -23,13 +23,13 @@ $dictionary['Enhanced_WebLogicHooksDelivery'] = [
         'request_data' => [
             'name' => 'request_data',
             'vname' => 'LBL_EWLH_REQUEST_DATA',
-            'type' => 'varchar',
+            'type' => 'text',
             'required' => true,
         ],
         'response_data' => [
             'name' => 'response_data',
             'vname' => 'LBL_EWLH_RESPONSE_DATA',
-            'type' => 'varchar',
+            'type' => 'text',
             'required' => true,
         ],
         'status' => [

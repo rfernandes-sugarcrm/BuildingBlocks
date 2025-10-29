@@ -109,7 +109,8 @@ $dictionary['Enhanced_WebLogicHooks'] = [
         'headers' => [
             'name' => 'headers',
             'vname' => 'LBL_EWLH_HEADERS',
-            'type' => 'text',
+            'type' => 'key-value-selector-input',
+            'dbType' => 'text',
             'comment' => 'Headers to send in the webhook with variables',
         ],
         'timeout' => [

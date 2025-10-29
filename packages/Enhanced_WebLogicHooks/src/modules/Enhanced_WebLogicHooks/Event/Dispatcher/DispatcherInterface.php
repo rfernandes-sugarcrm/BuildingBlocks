@@ -10,18 +10,23 @@
  * Copyright (C) SugarCRM Inc. All rights reserved.
  */
 
-namespace Sugarcrm\Sugarcrm\Enhanced_WebLogicHooks\Event;
+namespace Sugarcrm\Sugarcrm\modules\Enhanced_WebLogicHooks\Event\Dispatcher;
+use Sugarcrm\Sugarcrm\Security\HttpClient\ExternalResourceClient;
 
 interface DispatcherInterface
 {
     /**
      * Dispatches a module event to its appropriate channel.
      *
-     * @param SugarBean $bean The impacted record.
-     * @param string $event The event type.
-     * @param array $args Additional arguments.
-     *
-     * @return void
+     * @param ExternalResourceClient $client
+     * @param SugarBean $ewlb
+     * @param string $payload
+     * @param array $headers
+     * @return array{
+     *     attempts: int,
+     *     logs: array<int, array{statusCode: int|null, exception: string|null}>,
+     *     response: mixed|null
+     * }
      */
-    public function dispatch(string $event, array $args): void;
+    public function dispatch(ExternalResourceClient $client, $ewlb, string $payload, array $headers): array;
 }
