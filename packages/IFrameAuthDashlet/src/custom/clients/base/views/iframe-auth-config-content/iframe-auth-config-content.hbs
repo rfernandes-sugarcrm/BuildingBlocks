@@ -1,0 +1,28 @@
+<style>
+    .page-header {
+        margin-bottom: 20px;
+    }
+    .page-message {
+        margin-bottom: 20px;
+    }
+    .config_values {
+        margin: 10px;
+    }
+</style>
+<div class="record">
+    <div class="config_container">
+        <div class="config_values">
+            {{#each meta.fields}}
+                <h5>{{str label ../module}}</h5>
+                {{field ../this model=../model template="edit"}}
+            {{/each}}
+        </div>
+    </div>
+    <div class="config_note" style="margin: 20px 10px 0 10px; color: #888; font-size: 14px;">
+        <strong>Note:</strong> This Base URL must be present in the CSP settings, otherwise it will not show up.
+        <br/>
+        <a href="#Administration/config/csp">
+            Click here to go to CSP settings
+        </a>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+{{#if ready}}
+    <iframe src="{{url}}" height="{{iframe_height}}" width="100%"></iframe>
+{{/if}}
+{{#if missconfig}}
+    <div class="alert alert-error" style="margin: 100px;">
+        IFrame Auth Dashlet is not configured properly.<br/><br/>
+        <a href="#" onclick="parent.SUGAR.App.router.navigate('Home/layout/iframe-auth-config', {trigger: true}); return false;">
+            Go to Configuration
+        </a> to set Base URL and Secret Key.
+    </div>
+{{/if}}
