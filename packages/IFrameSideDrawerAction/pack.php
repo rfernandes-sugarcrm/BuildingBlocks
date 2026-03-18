@@ -3,11 +3,11 @@
 // Copyright 2016 SugarCRM Inc.  Licensed by SugarCRM under the Apache 2.0 license.
 
 
-$packageID = "BuildingBlocks_IFrameDrawerAction";
-$packageLabel = "BuildingBlocks: IFrame Drawer Action";
-$supportedVersionRegex = '(25|9|8|7)\\..*$';
+$packageID = "BuildingBlocks_IFrameSideDrawerAction";
+$packageLabel = "BuildingBlocks: IFrame Side Drawer Action";
+$supportedVersionRegex = '(26|25|14)\\..*$';
 $acceptableSugarFlavors = array('PRO','ENT','ULT');
-$description = 'Opens a drawer that displays a custom IFrame';
+$description = 'Opens a sideDrawer that displays a custom IFrame';
 /******************************/
 
 if (empty($argv[1])) {
@@ -60,9 +60,6 @@ $manifest = array(
 $installdefs = array(
     'beans' => array (),
     'id' => $packageID,
-    'post_execute' => array(
-        'scripts/cleanup.php',
-    ),
 );
 
 echo "Creating {$zipFile} ... \n";
